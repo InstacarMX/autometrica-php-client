@@ -21,7 +21,11 @@
 namespace Instacar\AutometricaWebserviceClient;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Instacar\AutometricaWebserviceClient\Model\Vehicle;
+use Instacar\AutometricaWebserviceClient\Response\CatalogResponse;
+use Instacar\AutometricaWebserviceClient\Response\VehiclePricesResponse;
 use LogicException;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -68,6 +72,35 @@ class AutometricaClient
     }
 
     /**
+     * @return Vehicle[]
+     * @throws ClientExceptionInterface
+     */
+    public function getCatalog(): iterable
+    {
+        return $this->webserviceClient->requestCollection(CatalogResponse::class, 'catalogo.php');
+    }
+
+    /**
+     * @param string $brand
+     * @param string $model
+     * @param int $year
+     * @param string $trim
+     * @param int $mileage
+     * @return Vehicle[]
+     * @throws ClientExceptionInterface
+     */
+    public function getPrices(string $brand, string $model, int $year, string $trim, int $mileage = 0): iterable
+    {
+        return $this->webserviceClient->requestCollection(VehiclePricesResponse::class, 'lineal.php', 'POST', [
+            'brand' => $brand,
+            'subbrand' => $model,
+            'year' => $year,
+            'version' => $trim,
+            'kilometraje' => $mileage,
+        ]);
+    }
+
+    /**
      * @param string $username
      * @param string $password
      * @return static
@@ -83,7 +116,7 @@ class AutometricaClient
         }
 
         $httpClient = HttpClient::create([
-            'base_uri' => 'https://ws.autometrica.com.mx/',
+            'base_uri' => 'https://ws.autometrica.mx/',
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Username' => $username,

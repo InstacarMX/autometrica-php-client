@@ -20,6 +20,7 @@
 
 namespace Instacar\AutometricaWebserviceClient;
 
+use Instacar\AutometricaWebserviceClient\Response\CollectionResponseInterface;
 use Nyholm\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -48,27 +49,32 @@ class WebserviceHttpClient
     }
 
     /**
+     * @phpstan-template T
+     * @phpstan-param class-string<T> $responseClass
      * @param string $responseClass
      * @param string $endpoint
-     * @param string$method
-     * @param string[] $headers
+     * @param string $method
+     * @phpstan-param array<string, mixed> $headers
+     * @param array $headers
      * @param mixed $body
-     * @return mixed
+     * @phpstan-return iterable<T>
+     * @return iterable
      * @throws ClientExceptionInterface
      */
-    public function request(
+    public function requestCollection(
         string $responseClass,
         string $endpoint,
         string $method = 'GET',
         array $headers = [],
         $body = null
-    ) {
+    ): iterable {
         if ($body !== null) {
             $body = $this->serializer->serialize($body, 'json');
         }
 
         $request = new Request($method, $endpoint, $headers, $body);
         $response = $this->client->sendRequest($request)->getBody()->getContents();
+        /** @phpstan-var CollectionResponseInterface<T> $dataResponse */
         $dataResponse = $this->serializer->deserialize($response, $responseClass, 'json');
 
         return $dataResponse->getData();
