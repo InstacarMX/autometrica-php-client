@@ -78,6 +78,11 @@ $httpClient = HttpClient::create([
 return new AutometricaClient($httpClient);
 ~~~
 
+## Advertencias
+- Ciertas líneas que no fueron comercializadas en México en años específicos son devueltas por el Webservice con la
+versión ***"NOTA: En este año, el vehículo no se comercializó en México"***. Si se intenta consultar sus precios el 
+sistema devolverá una colección vacía.
+
 ## Licencia
 Esta librería utiliza la licencia Lesser General Public Licence Version 3 (LGPLv3). Puede consultarla en el archivo
 [LICENSE](LICENSE).
