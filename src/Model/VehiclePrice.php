@@ -44,7 +44,7 @@ class VehiclePrice
      * @SerializedName("km_group")
      */
     #[SerializedName('km_group')]
-    private string $kilometerGroup;
+    private ?string $kilometerGroup;
 
     /**
      * @SerializedName("sale")
@@ -58,12 +58,21 @@ class VehiclePrice
     #[SerializedName('purchase')]
     private int $purchasePrice;
 
+    /**
+     * @param string $brand
+     * @param string $model
+     * @param int $year
+     * @param string $trim
+     * @param string|int $kilometerGroup
+     * @param int $salePrice
+     * @param int $purchasePrice
+     */
     public function __construct(
         string $brand,
         string $model,
         int $year,
         string $trim,
-        string $kilometerGroup,
+        $kilometerGroup,
         int $salePrice,
         int $purchasePrice
     ) {
@@ -71,7 +80,7 @@ class VehiclePrice
         $this->model = $model;
         $this->year = $year;
         $this->trim = $trim;
-        $this->kilometerGroup = $kilometerGroup;
+        $this->kilometerGroup = is_string($kilometerGroup) ? $kilometerGroup : null;
         $this->salePrice = $salePrice;
         $this->purchasePrice = $purchasePrice;
     }
@@ -96,7 +105,7 @@ class VehiclePrice
         return $this->trim;
     }
 
-    public function getKilometerGroup(): string
+    public function getKilometerGroup(): ?string
     {
         return $this->kilometerGroup;
     }

@@ -24,6 +24,7 @@ namespace Instacar\AutometricaWebserviceClient\Response;
  * @phpstan-template T
  * @method self addData($datum)
  * @method self removeData($datum)
+ * @internal
  */
 interface CollectionResponseInterface
 {

@@ -104,7 +104,7 @@ class AutometricaClient
     /**
      * @param string $username
      * @param string $password
-     * @return static
+     * @return self
      */
     public static function createDefault(string $username, string $password): self
     {

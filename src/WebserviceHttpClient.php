@@ -26,6 +26,9 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @internal
+ */
 class WebserviceHttpClient
 {
     /**
@@ -50,7 +53,8 @@ class WebserviceHttpClient
 
     /**
      * @phpstan-template T
-     * @phpstan-param class-string<T> $responseClass
+     * @phpstan-template TResponse of CollectionResponseInterface<T>
+     * @phpstan-param class-string<TResponse> $responseClass
      * @param string $responseClass
      * @param string $endpoint
      * @param string $method
@@ -74,8 +78,12 @@ class WebserviceHttpClient
 
         $request = new Request($method, $endpoint, $headers, $body);
         $response = $this->client->sendRequest($request)->getBody()->getContents();
-        /** @phpstan-var CollectionResponseInterface<T> $dataResponse */
-        $dataResponse = $this->serializer->deserialize($response, $responseClass, 'json');
+        /** @phpstan-var TResponse $dataResponse */
+        $dataResponse = $this->serializer->deserialize($response, $responseClass, 'json', [
+            // We need to disable the type enforcement to manage the unknown kmGroup 0 in some prices
+            // With the typed properties for PHP 7.4, this should not be a problem
+            'disable_type_enforcement' => true,
+        ]);
 
         return $dataResponse->getData();
     }

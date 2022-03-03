@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @phpstan-implements CollectionResponseInterface<VehiclePrice>
+ * @internal
  */
 class VehiclePricesResponse implements CollectionResponseInterface
 {
