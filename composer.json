@@ -35,5 +35,10 @@
         "psr-4": {
             "Instacar\\AutometricaWebserviceClient\\Test\\": "tests/"
         }
+    },
+    "scripts": {
+        "lint": "vendor/bin/phpcs -q -n --no-colors",
+        "analyze": "vendor/bin/phpstan analyse -q -n --no-ansi",
+        "test": "vendor/bin/phpunit"
     }
 }
