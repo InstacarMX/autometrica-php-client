@@ -22,6 +22,7 @@ namespace Instacar\AutometricaWebserviceClient;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Instacar\AutometricaWebserviceClient\Model\Vehicle;
+use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use Instacar\AutometricaWebserviceClient\Response\CatalogResponse;
 use Instacar\AutometricaWebserviceClient\Response\VehiclePricesResponse;
 use LogicException;
@@ -86,7 +87,7 @@ class AutometricaClient
      * @param int $year
      * @param string $trim
      * @param int $mileage
-     * @return Vehicle[]
+     * @return VehiclePrice[]
      * @throws ClientExceptionInterface
      */
     public function getPrices(string $brand, string $model, int $year, string $trim, int $mileage = 0): iterable
