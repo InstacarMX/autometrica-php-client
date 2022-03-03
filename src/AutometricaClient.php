@@ -21,6 +21,9 @@
 namespace Instacar\AutometricaWebserviceClient;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Instacar\AutometricaWebserviceClient\Exceptions\BadRequestHttpException;
+use Instacar\AutometricaWebserviceClient\Exceptions\UnauthorizedHttpException;
+use Instacar\AutometricaWebserviceClient\Exceptions\UnknownHttpException;
 use Instacar\AutometricaWebserviceClient\Model\Vehicle;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use Instacar\AutometricaWebserviceClient\Response\CatalogResponse;
@@ -75,6 +78,9 @@ class AutometricaClient
     /**
      * @return Vehicle[]
      * @throws ClientExceptionInterface
+     * @throws BadRequestHttpException
+     * @throws UnauthorizedHttpException
+     * @throws UnknownHttpException
      */
     public function getCatalog(): iterable
     {
@@ -89,6 +95,9 @@ class AutometricaClient
      * @param int $mileage
      * @return VehiclePrice[]
      * @throws ClientExceptionInterface
+     * @throws BadRequestHttpException
+     * @throws UnauthorizedHttpException
+     * @throws UnknownHttpException
      */
     public function getPrices(string $brand, string $model, int $year, string $trim, int $mileage = 0): iterable
     {
