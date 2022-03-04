@@ -64,7 +64,6 @@ class WebserviceHttpClient
      * @param string $method
      * @phpstan-param array<string, mixed> $headers
      * @param array $headers
-     * @param mixed $body
      * @phpstan-return iterable<T>
      * @return iterable
      * @throws ClientExceptionInterface
@@ -76,18 +75,15 @@ class WebserviceHttpClient
         string $responseClass,
         string $endpoint,
         string $method = 'GET',
-        array $headers = [],
-        $body = null
+        array $headers = []
     ): iterable {
-        if ($body !== null) {
-            $body = $this->serializer->serialize($body, 'json');
-        }
+        $normalizedHeaders = $this->normalizeHeaders($headers);
 
-        $request = new Request($method, $endpoint, $headers, $body);
+        $request = new Request($method, $endpoint, $normalizedHeaders);
         $response = $this->client->sendRequest($request);
         $statusCode = $response->getStatusCode();
 
-        // The use of the status codes 400 and 401 is inverted, but that's how the Autometrica server use them.
+        // The status code 400 Bad Request should be 403 Forbidden, but that's how the Autometrica server use them.
         if ($statusCode === 400) {
             throw new BadRequestHttpException('The username or password is incorrect');
         }
@@ -108,5 +104,28 @@ class WebserviceHttpClient
         ]);
 
         return $dataResponse->getData();
+    }
+
+    /**
+     * @phpstan-param array<string, mixed> $headers
+     * @param array $headers
+     * @phpstan-return  array<string, string>
+     * @return array
+     */
+    private function normalizeHeaders(array $headers): array
+    {
+        // The Autometrica Webservice does not understand the UTF-8 charset in the headers, so we need to convert the
+        // charset to ISO-8859-1.
+        foreach ($headers as $header => $value) {
+            if (is_array($value)) {
+                $value = array_map('utf8_decode', $value);
+            } else {
+                $value = utf8_decode($value);
+            }
+
+            $headers[$header] = $value;
+        }
+
+        return $headers;
     }
 }
