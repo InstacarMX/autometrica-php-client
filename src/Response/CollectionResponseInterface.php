@@ -22,8 +22,10 @@ namespace Instacar\AutometricaWebserviceClient\Response;
 
 /**
  * @phpstan-template T
- * @method self addData($datum)
- * @method self removeData($datum)
+ * @method self addData($data) Add the data to the internal collection
+ * @method self addDatum($datum) addData() compatible method for Symfony 4.4
+ * @method self removeData($data) Remove the data to the internal collection
+ * @method self removeDatum($datum) removeData() compatible method for Symfony 4.4
  * @internal
  */
 interface CollectionResponseInterface

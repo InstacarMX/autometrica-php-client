@@ -55,12 +55,12 @@ class CatalogResponse implements CollectionResponseInterface
     }
 
     /**
-     * @param Vehicle $datum
+     * @param Vehicle $data
      * @return self
      */
-    public function addData(Vehicle $datum): self
+    public function addData(Vehicle $data): self
     {
-        $this->data->add($datum);
+        $this->data->add($data);
 
         return $this;
     }
@@ -69,7 +69,27 @@ class CatalogResponse implements CollectionResponseInterface
      * @param Vehicle $datum
      * @return self
      */
-    public function removeData(Vehicle $datum): self
+    public function addDatum(Vehicle $datum): self
+    {
+        $this->data->add($datum);
+
+        return $this;
+    }
+
+    /**
+     * @param Vehicle $data
+     * @return self
+     */
+    public function removeData(Vehicle $data): self
+    {
+        throw new LogicException("This is a stub method, it should not be used");
+    }
+
+    /**
+     * @param Vehicle $datum
+     * @return self
+     */
+    public function removeDatum(Vehicle $datum): self
     {
         throw new LogicException("This is a stub method, it should not be used");
     }

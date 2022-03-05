@@ -55,12 +55,12 @@ class VehiclePricesResponse implements CollectionResponseInterface
     }
 
     /**
-     * @param VehiclePrice $datum
+     * @param VehiclePrice $data
      * @return self
      */
-    public function addData(VehiclePrice $datum): self
+    public function addData(VehiclePrice $data): self
     {
-        $this->data->add($datum);
+        $this->data->add($data);
 
         return $this;
     }
@@ -69,7 +69,27 @@ class VehiclePricesResponse implements CollectionResponseInterface
      * @param VehiclePrice $datum
      * @return self
      */
-    public function removeData(VehiclePrice $datum): self
+    public function addDatum(VehiclePrice $datum): self
+    {
+        $this->data->add($datum);
+
+        return $this;
+    }
+
+    /**
+     * @param VehiclePrice $data
+     * @return self
+     */
+    public function removeData(VehiclePrice $data): self
+    {
+        throw new LogicException("This is a stub method, it should not be used");
+    }
+
+    /**
+     * @param VehiclePrice $datum
+     * @return self
+     */
+    public function removeDatum(VehiclePrice $datum): self
     {
         throw new LogicException("This is a stub method, it should not be used");
     }

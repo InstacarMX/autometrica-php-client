@@ -45,14 +45,26 @@ class MockedCollection implements CollectionResponseInterface
         return $this->data;
     }
 
-    public function addData(MockedItem $datum): self
+    public function addData(MockedItem $data): self
+    {
+        $this->data->add($data);
+
+        return $this;
+    }
+
+    public function addDatum(MockedItem $datum): self
     {
         $this->data->add($datum);
 
         return $this;
     }
 
-    public function removeData(MockedItem $datum): self
+    public function removeData(MockedItem $data): self
+    {
+        throw new LogicException("This is a stub method, it should not be used");
+    }
+
+    public function removeDatum(MockedItem $datum): self
     {
         throw new LogicException("This is a stub method, it should not be used");
     }

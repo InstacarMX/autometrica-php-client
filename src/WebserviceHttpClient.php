@@ -69,9 +69,10 @@ class WebserviceHttpClient
         $annotationReader = PHP_VERSION_ID < 80000 ? new AnnotationReader() : null;
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader($annotationReader));
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
+        $propertyTypeExtractor = new ReflectionExtractor();
         $this->serializer = new Serializer(
             [
-                new ObjectNormalizer($classMetadataFactory, $nameConverter),
+                new ObjectNormalizer($classMetadataFactory, $nameConverter, null, $propertyTypeExtractor),
                 new ArrayDenormalizer(),
             ],
             ['json' => new JsonEncoder()],
