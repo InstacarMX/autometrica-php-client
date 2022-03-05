@@ -1,5 +1,5 @@
 # Autométrica PHP Client
-Una implementación no oficial del Webservice para Autométrica.
+Una implementación opinada no oficial del Webservice para Autométrica.
 
 ## Notas
 Esta librería NO está relacionada con Autométrica de ninguna manera y/o forma. Es simplemente un trabajo derivado para
@@ -53,11 +53,6 @@ use Instacar\AutometricaWebserviceClient\AutometricaClient;
 
 $cliente = new AutometricaClient($clienteHttp, $username, $password);
 ~~~
-
-## Advertencias
-- Ciertas líneas que no fueron comercializadas en México en años específicos son devueltas por el Webservice con la
-versión ***"NOTA: En este año, el vehículo no se comercializó en México"***. Si se intenta consultar sus precios el 
-sistema devolverá una colección vacía.
 
 ## Licencia
 Esta librería utiliza la licencia Lesser General Public Licence Version 3 (LGPLv3). Puede consultarla en el archivo

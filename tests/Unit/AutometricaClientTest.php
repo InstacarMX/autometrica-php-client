@@ -44,8 +44,27 @@ class AutometricaClientTest extends TestCase
             new MockResponse(
                 '{
                     "catalogo_lineal": [
-                        { "index": 1001, "brand": "Audi", "subbrand": "A1", "year": 2020, "version": "Deluxe Edition" },
-                        { "index": 2001, "brand": "Volkswagen", "subbrand": "Beetle", "year": 2018, "version": "Sport" }
+                        {
+                            "index": 1001,
+                            "brand": "Audi",
+                            "subbrand": "A1",
+                            "year": 2020,
+                            "version": "Deluxe Edition"
+                        },
+                        { 
+                            "index": 1002,
+                            "brand": "Audi",
+                            "subbrand": "A1",
+                            "year": 2019,
+                            "version": "NOTA: En este año, el vehículo no se comercializó en México"
+                        },
+                        {
+                            "index": 2001,
+                            "brand": "Volkswagen",
+                            "subbrand": "Beetle",
+                            "year": 2018,
+                            "version": "Sport"
+                        }
                     ]
                 }'
             ),

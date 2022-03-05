@@ -50,7 +50,10 @@ class CatalogResponse implements CollectionResponseInterface
      */
     public function getData(): iterable
     {
-        return $this->data;
+        // Filter all vehicles that weren't sold
+        return $this->data->filter(static function (Vehicle $vehicle) {
+            return $vehicle->getTrim() !== 'NOTA: En este año, el vehículo no se comercializó en México';
+        });
     }
 
     /**
