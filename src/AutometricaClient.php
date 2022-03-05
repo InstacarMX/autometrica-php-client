@@ -35,17 +35,11 @@ use Symfony\Component\HttpClient\Psr18Client;
 
 class AutometricaClient
 {
-    /**
-     * @var WebserviceHttpClient
-     */
     private WebserviceHttpClient $webserviceClient;
 
-    /**
-     * @param ClientInterface $httpClient
-     */
-    public function __construct(ClientInterface $httpClient)
+    public function __construct(ClientInterface $client, string $username, string $password)
     {
-        $this->webserviceClient = new WebserviceHttpClient($httpClient);
+        $this->webserviceClient = new WebserviceHttpClient($client, $username, $password);
     }
 
     /**
@@ -83,31 +77,18 @@ class AutometricaClient
         ]);
     }
 
-    /**
-     * @param string $username
-     * @param string $password
-     * @return self
-     */
     public static function createDefault(string $username, string $password): self
     {
         if (!class_exists(HttpClient::class)) {
             throw new LogicException(
                 'You must install the Symfony HTTP Client component.' . PHP_EOL .
-                'Please, execute "composer require symfony/http-client" and ' .
-                '"composer require symfony/psr-http-message-bridge" in your project root'
+                'Please, execute "composer require symfony/http-client" in your project root'
             );
         }
 
-        $httpClient = HttpClient::create([
-            'base_uri' => 'https://ws.autometrica.mx/',
-            'headers' => [
-                'Content-Type' => 'application/json; charset=UTF-8',
-                'Username' => $username,
-                'Password' => $password,
-            ],
-        ]);
+        $httpClient = HttpClient::create();
         $psr18Client = new Psr18Client($httpClient);
 
-        return new self($psr18Client);
+        return new self($psr18Client, $username, $password);
     }
 }

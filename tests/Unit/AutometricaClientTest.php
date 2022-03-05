@@ -94,7 +94,7 @@ class AutometricaClientTest extends TestCase
         ], 'https://example.com/');
         $psr18Client = new Psr18Client($httpClient);
 
-        self::$autometricaClient = new AutometricaClient($psr18Client);
+        self::$autometricaClient = new AutometricaClient($psr18Client, 'test', 'test');
     }
 
     public function testCatalog(): void

@@ -43,20 +43,17 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class WebserviceHttpClient
 {
-    /**
-     * @var ClientInterface
-     */
+    private const BASE_URL = 'https://ws.autometrica.mx/';
+
     private ClientInterface $client;
 
-    /**
-     * @var SerializerInterface
-     */
     private SerializerInterface $serializer;
 
-    /**
-     * @param ClientInterface $client
-     */
-    public function __construct(ClientInterface $client)
+    private string $username;
+
+    private string $password;
+
+    public function __construct(ClientInterface $client, string $username, string $password)
     {
         $annotationReader = new AnnotationReader();
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader($annotationReader));
@@ -70,6 +67,8 @@ class WebserviceHttpClient
             ['json' => new JsonEncoder()],
         );
         $this->client = $client;
+        $this->username = $username;
+        $this->password = $password;
     }
 
     /**
@@ -96,7 +95,7 @@ class WebserviceHttpClient
     ): iterable {
         $normalizedHeaders = $this->normalizeHeaders($headers);
 
-        $request = new Request($method, $endpoint, $normalizedHeaders);
+        $request = new Request($method, self::BASE_URL . $endpoint, $normalizedHeaders);
         $response = $this->client->sendRequest($request);
         $statusCode = $response->getStatusCode();
 
@@ -126,11 +125,13 @@ class WebserviceHttpClient
     /**
      * @phpstan-param array<string, mixed> $headers
      * @param array $headers
-     * @phpstan-return  array<string, string>
+     * @phpstan-return array<string, string>
      * @return array
      */
     private function normalizeHeaders(array $headers): array
     {
+        $normalizedHeaders = [];
+
         // The Autometrica Webservice does not understand the UTF-8 charset in the headers, so we need to convert the
         // charset to ISO-8859-1.
         foreach ($headers as $header => $value) {
@@ -140,9 +141,14 @@ class WebserviceHttpClient
                 $value = utf8_decode($value);
             }
 
-            $headers[$header] = $value;
+            $normalizedHeaders[$header] = $value;
         }
 
-        return $headers;
+        // Set default headers
+        $normalizedHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+        $normalizedHeaders['Username'] = $this->username;
+        $normalizedHeaders['Password'] = $this->password;
+
+        return $normalizedHeaders;
     }
 }

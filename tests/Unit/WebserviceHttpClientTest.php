@@ -54,7 +54,7 @@ class WebserviceHttpClientTest extends TestCase
         ], 'https://example.com/');
         $psr18Client = new Psr18Client($httpClient);
 
-        self::$webserviceClient = new WebserviceHttpClient($psr18Client);
+        self::$webserviceClient = new WebserviceHttpClient($psr18Client, 'test', 'test');
     }
 
     public function testRequestCollection(): void

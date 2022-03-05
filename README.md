@@ -19,9 +19,8 @@ La instalación del cliente es simple, solo debes ejecutar el siguiente comando:
     composer require instacar/autometrica-webservice-client
 
 ## Uso
-Para usar el cliente puedes crear una instancia por defecto que se encargará de crear el cliente HTTP PSR-18 y el 
-serializador con las configuraciones recomendadas. El cliente tiene un método por cada punto final del Webservice de 
-Autometrica. Por ejemplo, para solicitar el catálogo de vehículos:
+Para usar el cliente puedes crear una instancia por defecto que se encargará de crear el cliente HTTP PSR-18. El cliente 
+tiene un método por cada punto final del Webservice de Autometrica. Por ejemplo, para solicitar el catálogo de vehículos:
 
 ~~~php
 use Instacar\AutometricaWebserviceClient\AutometricaClient;
@@ -36,12 +35,15 @@ propiedades. Siguiendo con el ejemplo anterior:
 
 ~~~php
 foreach ($catalogo as $vehiculo) {
-    echo $vehiculo->getId();   // El ID de la marca
-    echo $vehiculo->getName(); // El nombre de la marca
+    echo $vehiculo->getBrand(); // La marca del vehículo
+    echo $vehiculo->getModel(); // El modelo del vehículo
+    echo $vehiculo->getYear();  // EL año del vehículo
+    echo $vehiculo->getTrim();  // La versión del vehículo
 }
 ~~~
 
 Si desea ver los métodos y modelos implementados, por favor, consulte la documentación.
+
 ### Avanzado
 Si deseas utilizar tus propias implementaciones del cliente HTTP PSR-18, puedes instanciar directamente el 
 ``AutometricaClient`` con el cliente HTTP.
@@ -49,27 +51,7 @@ Si deseas utilizar tus propias implementaciones del cliente HTTP PSR-18, puedes 
 ~~~php
 use Instacar\AutometricaWebserviceClient\AutometricaClient;
 
-$cliente = new AutometricaClient($clienteHttp);
-~~~
-
-Nota: Si utiliza esta manera de inicializar el cliente, usted es el responsable de proporcionar la url base junto con la
-username y el password al cliente. A continuación se anexa la configuración por defecto usada en 
-``AutometricaClient::createDefault``:
-
-~~~php
-use Instacar\AutometricaWebserviceClient\AutometricaClient;
-use Symfony\Component\HttpClient\HttpClient;
-
-$httpClient = HttpClient::create([
-    'base_uri' => 'https://ws.autometrica.com.mx/',
-    'headers' => [
-        'Content-Type' => 'application/json',
-        'Username' => $username, // El usuario de Autométrica
-        'Password' => $password, // La contraseña del usuario de Autométrica
-    ],
-]);
-
-return new AutometricaClient($httpClient);
+$cliente = new AutometricaClient($clienteHttp, $username, $password);
 ~~~
 
 ## Advertencias
