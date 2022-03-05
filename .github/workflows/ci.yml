@@ -28,6 +28,7 @@ jobs:
         run: composer validate --strict
 
       - name: Cache vendor 📦
+        if: ${{ !env.ACT }}
         uses: actions/cache@v2
         with:
           path: vendor
@@ -42,5 +43,5 @@ jobs:
       - name: Check types 🔍
         run: composer run-script analyze
 
-      - name: Run tests 🧪
+      - name: Run unit tests 🧪
         run: composer run-script test:unit
