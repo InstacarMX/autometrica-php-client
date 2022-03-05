@@ -37,7 +37,6 @@ class CatalogResponse implements CollectionResponseInterface
      * @phpstan-var Collection<int, Vehicle>
      * @var Collection|Vehicle[]
      */
-    #[SerializedName('catalogo_lineal')]
     private Collection $data;
 
     public function __construct()

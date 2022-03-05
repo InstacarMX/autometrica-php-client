@@ -25,7 +25,6 @@ use Instacar\AutometricaWebserviceClient\Exceptions\BadRequestHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnauthorizedHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnknownHttpException;
 use Instacar\AutometricaWebserviceClient\Response\CollectionResponseInterface;
-use LogicException;
 use Nyholm\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -59,14 +58,7 @@ class WebserviceHttpClient
      */
     public function __construct(ClientInterface $client)
     {
-        if (PHP_VERSION_ID < 80000 && !class_exists(AnnotationReader::class)) {
-            throw new LogicException(
-                'You must install the Doctrine Annotations.' . PHP_EOL .
-                'Please, execute "composer require doctrine/annotations" in your project root'
-            );
-        }
-
-        $annotationReader = PHP_VERSION_ID < 80000 ? new AnnotationReader() : null;
+        $annotationReader = new AnnotationReader();
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader($annotationReader));
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
         $propertyTypeExtractor = new ReflectionExtractor();

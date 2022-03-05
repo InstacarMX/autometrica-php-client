@@ -29,7 +29,6 @@ class VehiclePrice
     /**
      * @SerializedName("subbrand")
      */
-    #[SerializedName('subbrand')]
     private string $model;
 
     private int $year;
@@ -37,25 +36,21 @@ class VehiclePrice
     /**
      * @SerializedName("version")
      */
-    #[SerializedName('version')]
     private string $trim;
 
     /**
      * @SerializedName("km_group")
      */
-    #[SerializedName('km_group')]
     private ?string $kilometerGroup;
 
     /**
      * @SerializedName("sale")
      */
-    #[SerializedName('sale')]
     private int $salePrice;
 
     /**
      * @SerializedName("purchase")
      */
-    #[SerializedName('purchase')]
     private int $purchasePrice;
 
     /**

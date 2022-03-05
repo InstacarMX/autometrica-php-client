@@ -37,7 +37,6 @@ class VehiclePricesResponse implements CollectionResponseInterface
      * @phpstan-var Collection<int, VehiclePrice>
      * @var Collection|VehiclePrice[]
      */
-    #[SerializedName('lineal')]
     private Collection $data;
 
     public function __construct()

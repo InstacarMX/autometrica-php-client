@@ -13,12 +13,6 @@ para esta implementación de la siguiente manera:
 
     composer require symfony/http-client
 
-Igualmente, se requiere una librería para leer anotaciones. Se recomienda instalar la librería de Doctrine para esta
-tarea de la siguiente manera:
-
-    composer require doctrine/annotations
-
-Nota: Si utilizas PHP 8.0, no requieres instalar la librería de anotaciones.
 ### Librería
 La instalación del cliente es simple, solo debes ejecutar el siguiente comando:
 

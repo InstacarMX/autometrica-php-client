@@ -31,7 +31,6 @@ class Vehicle
     /**
      * @SerializedName("subbrand")
      */
-    #[SerializedName('subbrand')]
     private string $model;
 
     private int $year;
@@ -39,7 +38,6 @@ class Vehicle
     /**
      * @SerializedName("version")
      */
-    #[SerializedName('version')]
     private string $trim;
 
     public function __construct(int $index, string $brand, string $model, int $year, string $trim)
