@@ -15,7 +15,6 @@
         "symfony/serializer": "^4.4|^5.4|^6.0",
         "symfony/property-access": "^4.4|^5.4|^6.0",
         "symfony/property-info": "^4.4|^5.4|^6.0",
-        "symfony/polyfill-php80": "^1.25",
         "nyholm/psr7": "^1.5",
         "psr/http-client": "^1.0",
         "doctrine/annotations": "^1.13"
