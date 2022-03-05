@@ -25,6 +25,9 @@ use Instacar\AutometricaWebserviceClient\Model\Vehicle;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group integration
+ */
 class AutometricaClientTest extends TestCase
 {
     private AutometricaClient $client;

@@ -14,7 +14,7 @@
         "doctrine/collections": "^1.6",
         "symfony/serializer": "^4.4|^5.4|^6.0",
         "symfony/property-access": "^4.4|^5.4|^6.0",
-        "symfony/polyfill-php80": "^1.24",
+        "symfony/polyfill-php80": "^1.25",
         "nyholm/psr7": "^1.5",
         "psr/http-client": "^1.0"
     },
@@ -22,7 +22,7 @@
         "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^3.6",
-        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan": "^1.4",
         "doctrine/annotations": "^1.13",
         "symfony/http-client": "^4.4|^5.4|^6.0"
     },
@@ -39,6 +39,8 @@
     "scripts": {
         "lint": "vendor/bin/phpcs -q -n --no-colors",
         "analyze": "vendor/bin/phpstan analyse -q -n --no-ansi",
-        "test": "vendor/bin/phpunit"
+        "test:all": "vendor/bin/phpunit",
+        "test:integration": "vendor/bin/phpunit --group integration",
+        "test:unit": "vendor/bin/phpunit --group unit"
     }
 }

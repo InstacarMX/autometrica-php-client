@@ -20,7 +20,6 @@
 
 namespace Instacar\AutometricaWebserviceClient;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Instacar\AutometricaWebserviceClient\Exceptions\BadRequestHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnauthorizedHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnknownHttpException;
@@ -33,14 +32,6 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
-use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class AutometricaClient
 {
@@ -54,25 +45,7 @@ class AutometricaClient
      */
     public function __construct(ClientInterface $httpClient)
     {
-        if (PHP_VERSION_ID < 80000 && !class_exists(AnnotationReader::class)) {
-            throw new LogicException(
-                'You must install the Doctrine Annotations.' . PHP_EOL .
-                'Please, execute "composer require doctrine/annotations" in your project root'
-            );
-        }
-
-        $annotationReader = PHP_VERSION_ID < 80000 ? new AnnotationReader() : null;
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader($annotationReader));
-        $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
-        $propertyTypeExtractor = new ReflectionExtractor();
-        $serializer = new Serializer(
-            [
-                new ObjectNormalizer($classMetadataFactory, $nameConverter, null, $propertyTypeExtractor),
-                new ArrayDenormalizer(),
-            ],
-            ['json' => new JsonEncoder()],
-        );
-        $this->webserviceClient = new WebserviceHttpClient($httpClient, $serializer);
+        $this->webserviceClient = new WebserviceHttpClient($httpClient);
     }
 
     /**
@@ -128,7 +101,7 @@ class AutometricaClient
         $httpClient = HttpClient::create([
             'base_uri' => 'https://ws.autometrica.mx/',
             'headers' => [
-                'Content-Type' => 'application/json',
+                'Content-Type' => 'application/json; charset=UTF-8',
                 'Username' => $username,
                 'Password' => $password,
             ],
