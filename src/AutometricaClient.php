@@ -128,7 +128,7 @@ class AutometricaClient
     }
 
     /**
-     * @phpstan-template T
+     * @phpstan-template T of object
      * @phpstan-template TResponse of CollectionResponseInterface<T>
      * @phpstan-param class-string<TResponse> $responseClass
      * @param string $responseClass
@@ -153,7 +153,7 @@ class AutometricaClient
     }
 
     /**
-     * @phpstan-template T
+     * @phpstan-template T of object
      * @phpstan-template TResponse of ItemResponseInterface<T>
      * @phpstan-param class-string<TResponse> $responseClass
      * @param string $responseClass
@@ -162,7 +162,7 @@ class AutometricaClient
      * @phpstan-param array<string, mixed> $headers
      * @param array $headers
      * @phpstan-return T
-     * @return mixed
+     * @return object
      * @throws ClientExceptionInterface
      * @throws BadRequestHttpException
      * @throws UnauthorizedHttpException
@@ -178,7 +178,7 @@ class AutometricaClient
     }
 
     /**
-     * @phpstan-template T
+     * @phpstan-template T of object
      * @phpstan-param class-string<T> $responseClass
      * @param string $responseClass
      * @param string $endpoint
@@ -186,7 +186,7 @@ class AutometricaClient
      * @phpstan-param array<string, mixed> $headers
      * @param array $headers
      * @phpstan-return T
-     * @return mixed
+     * @return object
      * @throws ClientExceptionInterface
      * @throws BadRequestHttpException
      * @throws UnauthorizedHttpException
@@ -251,17 +251,18 @@ class AutometricaClient
     }
 
     /**
-     * @phpstan-template T
+     * @phpstan-template T of object
      * @param ResponseInterface $response
      * @phpstan-param class-string<T> $responseClass
      * @param string $responseClass
      * @phpstan-return T
-     * @return mixed
+     * @return object
      */
-    private function deserializeResponse(ResponseInterface $response, string $responseClass)
+    private function deserializeResponse(ResponseInterface $response, string $responseClass): object
     {
         $responseBody = $response->getBody()->getContents();
 
+        /** @phpstan-var T */
         return $this->serializer->deserialize(
             $responseBody,
             $responseClass,

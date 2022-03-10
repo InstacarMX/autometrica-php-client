@@ -27,8 +27,7 @@ use Instacar\AutometricaWebserviceClient\Model\AutometricaPrice;
 use Instacar\AutometricaWebserviceClient\Model\MileagePrice;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use LogicException;
-use RuntimeException;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
@@ -46,7 +45,7 @@ class VehiclePricesResponse implements CollectionResponseInterface, ItemResponse
     private Collection $data;
 
     /**
-     * @Ignore()
+     * @Groups({"ignore"})
      */
     private ?VehiclePrice $item = null;
 
