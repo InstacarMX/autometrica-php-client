@@ -1,9 +1,9 @@
 {
     "name": "instacar/autometrica-webservice-client",
     "type": "library",
-    "description": "An Webservice Client to talk with the Autometrica Webservice",
+    "description": "A Webservice Client to talk with the Autometrica Webservice",
     "keywords": [
-        "guia autométrica", "autometrica"
+        "guía autométrica", "autométrica"
     ],
     "license": "LGPL-3.0-only",
     "authors": [
