@@ -31,9 +31,12 @@ use Instacar\AutometricaWebserviceClient\Response\CollectionResponseInterface;
 use Instacar\AutometricaWebserviceClient\Response\ItemResponseInterface;
 use Instacar\AutometricaWebserviceClient\Response\VehiclePricesResponse;
 use LogicException;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -53,14 +56,20 @@ class AutometricaClient
 
     private ClientInterface $client;
 
+    private RequestFactoryInterface $requestFactory;
+
     private SerializerInterface $serializer;
 
     private string $username;
 
     private string $password;
 
-    public function __construct(ClientInterface $client, string $username, string $password)
-    {
+    public function __construct(
+        ClientInterface $client,
+        RequestFactoryInterface $requestFactory,
+        string $username,
+        string $password
+    ) {
         $annotationReader = new AnnotationReader();
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader($annotationReader));
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
@@ -73,6 +82,7 @@ class AutometricaClient
             ['json' => new JsonEncoder()],
         );
         $this->client = $client;
+        $this->requestFactory = $requestFactory;
         $this->username = $username;
         $this->password = $password;
     }
@@ -120,11 +130,18 @@ class AutometricaClient
                 'Please, execute "composer require symfony/http-client" in your project root'
             );
         }
+        if (!class_exists(Request::class)) {
+            throw new LogicException(
+                'You must install the Nyholm PSR-7 implementation.' . PHP_EOL .
+                'Please, execute "composer require nyholm/psr7" in your project root'
+            );
+        }
 
         $httpClient = HttpClient::create();
+        $httpFactory = new Psr17Factory();
         $psr18Client = new Psr18Client($httpClient);
 
-        return new self($psr18Client, $username, $password);
+        return new self($psr18Client, $httpFactory, $username, $password);
     }
 
     /**
@@ -198,9 +215,8 @@ class AutometricaClient
         string $method = 'GET',
         array $headers = []
     ) {
-        $normalizedHeaders = $this->normalizeHeaders($headers);
-
-        $request = new Request($method, self::BASE_URL . $endpoint, $normalizedHeaders);
+        $request = $this->requestFactory->createRequest($method, self::BASE_URL . $endpoint);
+        $request = $this->addHeaders($request, $headers);
         $response = $this->client->sendRequest($request);
         $statusCode = $response->getStatusCode();
 
@@ -221,33 +237,31 @@ class AutometricaClient
     }
 
     /**
+     * @param RequestInterface $request
      * @phpstan-param array<string, mixed> $headers
      * @param array $headers
-     * @phpstan-return array<string, string>
-     * @return array
+     * @return RequestInterface
      */
-    private function normalizeHeaders(array $headers): array
+    private function addHeaders(RequestInterface $request, array $headers): RequestInterface
     {
-        $normalizedHeaders = [];
-
         // The Autometrica Webservice does not understand the UTF-8 charset in the headers, so we need to convert the
         // charset to ISO-8859-1.
         foreach ($headers as $header => $value) {
             if (is_array($value)) {
-                $normalizedValue = array_map('utf8_decode', $value);
+                foreach ($value as $item) {
+                    $request = $request->withAddedHeader($header, utf8_decode($item));
+                }
             } else {
-                $normalizedValue = utf8_decode($value);
+                $request = $request->withHeader($header, utf8_decode($value));
             }
-
-            $normalizedHeaders[$header] = $normalizedValue;
         }
 
         // Set default headers
-        $normalizedHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-        $normalizedHeaders['Username'] = $this->username;
-        $normalizedHeaders['Password'] = $this->password;
-
-        return $normalizedHeaders;
+        return $request
+            ->withHeader('Content-Type', 'application/json; charset=UTF-8')
+            ->withHeader('Username', $this->username)
+            ->withHeader('Password', $this->password)
+        ;
     }
 
     /**

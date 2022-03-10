@@ -28,6 +28,7 @@ use Instacar\AutometricaWebserviceClient\Model\AddOnPrice;
 use Instacar\AutometricaWebserviceClient\Model\Vehicle;
 use Instacar\AutometricaWebserviceClient\Model\AutometricaPrice;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -131,9 +132,10 @@ class AutometricaClientTest extends TestCase
             new MockResponse('{}', ['http_code' => 401]),
             new MockResponse('{}', ['http_code' => 500]),
         ], 'https://example.com/');
+        $psr17Factory = new Psr17Factory();
         $psr18Client = new Psr18Client($httpClient);
 
-        self::$autometricaClient = new AutometricaClient($psr18Client, 'test', 'test');
+        self::$autometricaClient = new AutometricaClient($psr18Client, $psr17Factory, 'test', 'test');
     }
 
     public function testCatalog(): void
