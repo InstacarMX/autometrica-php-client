@@ -22,6 +22,7 @@ namespace Instacar\AutometricaWebserviceClient\Test\Integration;
 
 use Instacar\AutometricaWebserviceClient\AutometricaClient;
 use Instacar\AutometricaWebserviceClient\Model\Vehicle;
+use Instacar\AutometricaWebserviceClient\Model\AutometricaPrice;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use PHPUnit\Framework\TestCase;
 
@@ -50,16 +51,16 @@ class AutometricaClientTest extends TestCase
     /**
      * @depends testCatalog
      */
-    public function testPrices(Vehicle $vehicle): void
+    public function testPrice(Vehicle $vehicle): void
     {
-        $prices = $this->client->getPrices(
+        $price = $this->client->getPrice(
             $vehicle->getBrand(),
             $vehicle->getModel(),
             $vehicle->getYear(),
             $vehicle->getTrim(),
         );
 
-        $this->assertCollection(VehiclePrice::class, $prices, [$this, 'assertPrice']);
+        $this->assertItem(VehiclePrice::class, $price, [$this, 'assertPrice']);
     }
 
     /**
@@ -119,11 +120,13 @@ class AutometricaClientTest extends TestCase
 
     private function assertPrice(VehiclePrice $vehiclePrice): void
     {
+        $mileagePrice = $vehiclePrice->getMileagePrice();
+        $addOnPrices = $vehiclePrice->getAddOnPrices();
+
         $brand = $vehiclePrice->getBrand();
         $model = $vehiclePrice->getModel();
         $year = $vehiclePrice->getYear();
         $trim = $vehiclePrice->getTrim();
-        $kilometerGroup = $vehiclePrice->getKilometerGroup();
         $salePrice = $vehiclePrice->getSalePrice();
         $purchasePrice = $vehiclePrice->getPurchasePrice();
 
@@ -135,11 +138,35 @@ class AutometricaClientTest extends TestCase
         $this->assertIsInt($year);
         $this->assertNotNull($trim);
         $this->assertIsString($trim);
-        $this->assertNotNull($kilometerGroup);
-        $this->assertIsString($kilometerGroup);
         $this->assertNotNull($salePrice);
         $this->assertIsInt($salePrice);
         $this->assertNotNull($purchasePrice);
         $this->assertIsInt($purchasePrice);
+
+        if ($mileagePrice !== null) {
+            $kilometerGroup = $mileagePrice->getKilometerGroup();
+            $salePrice = $mileagePrice->getSalePrice();
+            $purchasePrice = $mileagePrice->getPurchasePrice();
+
+            $this->assertIsString($kilometerGroup);
+            $this->assertNotNull($kilometerGroup);
+            $this->assertIsInt($salePrice);
+            $this->assertNotNull($salePrice);
+            $this->assertIsInt($purchasePrice);
+            $this->assertNotNull($purchasePrice);
+        }
+
+        foreach ($addOnPrices as $addOnPrice) {
+            $name = $addOnPrice->getName();
+            $salePrice = $addOnPrice->getSalePrice();
+            $purchasePrice = $addOnPrice->getPurchasePrice();
+
+            $this->assertIsString($name);
+            $this->assertNotNull($name);
+            $this->assertIsInt($salePrice);
+            $this->assertNotNull($salePrice);
+            $this->assertIsInt($purchasePrice);
+            $this->assertNotNull($purchasePrice);
+        }
     }
 }

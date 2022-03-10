@@ -28,11 +28,13 @@ use Instacar\AutometricaWebserviceClient\Model\Vehicle;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use Instacar\AutometricaWebserviceClient\Response\CatalogResponse;
 use Instacar\AutometricaWebserviceClient\Response\CollectionResponseInterface;
+use Instacar\AutometricaWebserviceClient\Response\ItemResponseInterface;
 use Instacar\AutometricaWebserviceClient\Response\VehiclePricesResponse;
 use LogicException;
 use Nyholm\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -93,15 +95,15 @@ class AutometricaClient
      * @param int $year
      * @param string $trim
      * @param int $mileage
-     * @return VehiclePrice[]
+     * @return VehiclePrice
      * @throws ClientExceptionInterface
      * @throws BadRequestHttpException
      * @throws UnauthorizedHttpException
      * @throws UnknownHttpException
      */
-    public function getPrices(string $brand, string $model, int $year, string $trim, int $mileage = 0): iterable
+    public function getPrice(string $brand, string $model, int $year, string $trim, int $mileage = 0): VehiclePrice
     {
-        return $this->requestCollection(VehiclePricesResponse::class, 'lineal.php', 'POST', [
+        return $this->requestItem(VehiclePricesResponse::class, 'lineal.php', 'POST', [
             'brand' => $brand,
             'subbrand' => $model,
             'year' => $year,
@@ -147,6 +149,55 @@ class AutometricaClient
         string $method = 'GET',
         array $headers = []
     ): iterable {
+        return $this->makeRequest($responseClass, $endpoint, $method, $headers)->getData();
+    }
+
+    /**
+     * @phpstan-template T
+     * @phpstan-template TResponse of ItemResponseInterface<T>
+     * @phpstan-param class-string<TResponse> $responseClass
+     * @param string $responseClass
+     * @param string $endpoint
+     * @param string $method
+     * @phpstan-param array<string, mixed> $headers
+     * @param array $headers
+     * @phpstan-return T
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws BadRequestHttpException
+     * @throws UnauthorizedHttpException
+     * @throws UnknownHttpException
+     */
+    private function requestItem(
+        string $responseClass,
+        string $endpoint,
+        string $method = 'GET',
+        array $headers = []
+    ) {
+        return $this->makeRequest($responseClass, $endpoint, $method, $headers)->getItem();
+    }
+
+    /**
+     * @phpstan-template T
+     * @phpstan-param class-string<T> $responseClass
+     * @param string $responseClass
+     * @param string $endpoint
+     * @param string $method
+     * @phpstan-param array<string, mixed> $headers
+     * @param array $headers
+     * @phpstan-return T
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws BadRequestHttpException
+     * @throws UnauthorizedHttpException
+     * @throws UnknownHttpException
+     */
+    private function makeRequest(
+        string $responseClass,
+        string $endpoint,
+        string $method = 'GET',
+        array $headers = []
+    ) {
         $normalizedHeaders = $this->normalizeHeaders($headers);
 
         $request = new Request($method, self::BASE_URL . $endpoint, $normalizedHeaders);
@@ -157,6 +208,7 @@ class AutometricaClient
         if ($statusCode === 400) {
             throw new BadRequestHttpException('The username or password is incorrect');
         }
+
         if ($statusCode === 401) {
             throw new UnauthorizedHttpException('The username or password is required');
         }
@@ -165,15 +217,7 @@ class AutometricaClient
             throw new UnknownHttpException($response->getReasonPhrase());
         }
 
-        $responseBody = $response->getBody()->getContents();
-        /** @phpstan-var TResponse $dataResponse */
-        $dataResponse = $this->serializer->deserialize($responseBody, $responseClass, 'json', [
-            // We need to disable the type enforcement to manage the unknown kmGroup 0 in some prices
-            // With the typed properties for PHP 7.4, this should not be a problem
-            'disable_type_enforcement' => true,
-        ]);
-
-        return $dataResponse->getData();
+        return $this->deserializeResponse($response, $responseClass);
     }
 
     /**
@@ -204,5 +248,29 @@ class AutometricaClient
         $normalizedHeaders['Password'] = $this->password;
 
         return $normalizedHeaders;
+    }
+
+    /**
+     * @phpstan-template T
+     * @param ResponseInterface $response
+     * @phpstan-param class-string<T> $responseClass
+     * @param string $responseClass
+     * @phpstan-return T
+     * @return mixed
+     */
+    private function deserializeResponse(ResponseInterface $response, string $responseClass)
+    {
+        $responseBody = $response->getBody()->getContents();
+
+        return $this->serializer->deserialize(
+            $responseBody,
+            $responseClass,
+            'json',
+            [
+                // We need to disable the type enforcement to manage the unknown kmGroup 0 in some prices
+                // With the typed properties for PHP 7.4, this should not be a problem
+                'disable_type_enforcement' => true,
+            ],
+        );
     }
 }

@@ -24,7 +24,9 @@ use Instacar\AutometricaWebserviceClient\AutometricaClient;
 use Instacar\AutometricaWebserviceClient\Exceptions\BadRequestHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnauthorizedHttpException;
 use Instacar\AutometricaWebserviceClient\Exceptions\UnknownHttpException;
+use Instacar\AutometricaWebserviceClient\Model\AddOnPrice;
 use Instacar\AutometricaWebserviceClient\Model\Vehicle;
+use Instacar\AutometricaWebserviceClient\Model\AutometricaPrice;
 use Instacar\AutometricaWebserviceClient\Model\VehiclePrice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -79,6 +81,24 @@ class AutometricaClientTest extends TestCase
                             "km_group": "A",
                             "sale": 1000,
                             "purchase": 1250
+                        },
+                        {
+                            "brand": "Audi",
+                            "subbrand": "A1",
+                            "year": 2020,
+                            "version": "Agregar A/C",
+                            "km_group": "A",
+                            "sale": 200,
+                            "purchase": 300
+                        },
+                        {
+                            "brand": "Audi",
+                            "subbrand": "A1",
+                            "year": 2020,
+                            "version": "Agregar TA",
+                            "km_group": "A",
+                            "sale": 100,
+                            "purchase": 200
                         },
                         {
                             "brand": "Audi",
@@ -162,24 +182,21 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals('Sport', $trim);
     }
 
-    public function testPricesWithKilometerGroup(): void
+    public function testPrice(): void
     {
-        $collection = self::$autometricaClient->getPrices('Audi', 'A1', 2020, 'Deluxe Edition');
-        $this->assertIsIterable($collection);
+        $vehiclePrice = self::$autometricaClient->getPrice('Audi', 'A1', 2020, 'Deluxe Edition');
+        $mileagePrice = $vehiclePrice->getMileagePrice();
+        $addOnPrices = [ ...$vehiclePrice->getAddOnPrices() ];
 
-        $array = [ ...$collection ];
-        $this->assertContainsOnlyInstancesOf(VehiclePrice::class, $array);
-        $this->assertCount(2, $array);
+        $this->assertContainsOnlyInstancesOf(AddOnPrice::class, $addOnPrices);
+        $this->assertCount(2, $addOnPrices);
 
-        /** @var VehiclePrice $item */
-        $item = $array[0];
-        $brand = $item->getBrand();
-        $model = $item->getModel();
-        $year = $item->getYear();
-        $trim = $item->getTrim();
-        $kilometerGroup = $item->getKilometerGroup();
-        $salePrice = $item->getSalePrice();
-        $purchasePrice = $item->getPurchasePrice();
+        $brand = $vehiclePrice->getBrand();
+        $model = $vehiclePrice->getModel();
+        $year = $vehiclePrice->getYear();
+        $trim = $vehiclePrice->getTrim();
+        $salePrice = $vehiclePrice->getSalePrice();
+        $purchasePrice = $vehiclePrice->getPurchasePrice();
         $this->assertIsString($brand);
         $this->assertEquals('Audi', $brand);
         $this->assertIsString($model);
@@ -188,56 +205,61 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals(2020, $year);
         $this->assertIsString($trim);
         $this->assertEquals('Deluxe Edition', $trim);
-        $this->assertIsString($kilometerGroup);
-        $this->assertEquals('A', $kilometerGroup);
         $this->assertIsInt($salePrice);
         $this->assertEquals(1000, $salePrice);
         $this->assertIsInt($purchasePrice);
         $this->assertEquals(1250, $purchasePrice);
 
-        /** @var VehiclePrice $item */
-        $item = $array[1];
-        $brand = $item->getBrand();
-        $model = $item->getModel();
-        $year = $item->getYear();
-        $trim = $item->getTrim();
-        $kilometerGroup = $item->getKilometerGroup();
-        $salePrice = $item->getSalePrice();
-        $purchasePrice = $item->getPurchasePrice();
-        $this->assertIsString($brand);
-        $this->assertEquals('Audi', $brand);
-        $this->assertIsString($model);
-        $this->assertEquals('A1', $model);
-        $this->assertIsInt($year);
-        $this->assertEquals(2020, $year);
-        $this->assertIsString($trim);
-        $this->assertEquals('Valor kilometraje', $trim);
+        $kilometerGroup = $mileagePrice->getKilometerGroup();
+        $salePrice = $mileagePrice->getSalePrice();
+        $purchasePrice = $mileagePrice->getPurchasePrice();
         $this->assertIsString($kilometerGroup);
         $this->assertEquals('A', $kilometerGroup);
         $this->assertIsInt($salePrice);
         $this->assertEquals(0, $salePrice);
         $this->assertIsInt($purchasePrice);
         $this->assertEquals(0, $purchasePrice);
+
+        /** @var AddOnPrice $addOnPrice */
+        $addOnPrice = $addOnPrices[0];
+        $name = $addOnPrice->getName();
+        $salePrice = $addOnPrice->getSalePrice();
+        $purchasePrice = $addOnPrice->getPurchasePrice();
+        $this->assertIsString($name);
+        $this->assertEquals('Agregar A/C', $name);
+        $this->assertIsInt($salePrice);
+        $this->assertEquals(200, $salePrice);
+        $this->assertIsInt($purchasePrice);
+        $this->assertEquals(300, $purchasePrice);
+
+        /** @var AddOnPrice $addOnPrice */
+        $addOnPrice = $addOnPrices[1];
+        $name = $addOnPrice->getName();
+        $salePrice = $addOnPrice->getSalePrice();
+        $purchasePrice = $addOnPrice->getPurchasePrice();
+        $this->assertIsString($name);
+        $this->assertEquals('Agregar TA', $name);
+        $this->assertIsInt($salePrice);
+        $this->assertEquals(100, $salePrice);
+        $this->assertIsInt($purchasePrice);
+        $this->assertEquals(200, $purchasePrice);
     }
 
-    public function testPricesWithoutKilometerGroup(): void
+    public function testPriceWithoutMileage(): void
     {
-        $collection = self::$autometricaClient->getPrices('Volkswagen', 'Beetle', 2018, 'Sport');
-        $this->assertIsIterable($collection);
+        $vehiclePrice = self::$autometricaClient->getPrice('Audi', 'A1', 2020, 'Deluxe Edition');
+        $mileagePrice = $vehiclePrice->getMileagePrice();
+        $addOnPrices = [ ...$vehiclePrice->getAddOnPrices() ];
 
-        $array = [ ...$collection ];
-        $this->assertContainsOnlyInstancesOf(VehiclePrice::class, $array);
-        $this->assertCount(1, $array);
+        $this->assertNull($mileagePrice);
+        $this->assertCount(0, $addOnPrices);
 
-        /** @var VehiclePrice $item */
-        $item = $array[0];
-        $brand = $item->getBrand();
-        $model = $item->getModel();
-        $year = $item->getYear();
-        $trim = $item->getTrim();
-        $kilometerGroup = $item->getKilometerGroup();
-        $salePrice = $item->getSalePrice();
-        $purchasePrice = $item->getPurchasePrice();
+        $brand = $vehiclePrice->getBrand();
+        $model = $vehiclePrice->getModel();
+        $year = $vehiclePrice->getYear();
+        $trim = $vehiclePrice->getTrim();
+        $salePrice = $vehiclePrice->getSalePrice();
+        $purchasePrice = $vehiclePrice->getPurchasePrice();
         $this->assertIsString($brand);
         $this->assertEquals('Volkswagen', $brand);
         $this->assertIsString($model);
@@ -246,7 +268,6 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals(2018, $year);
         $this->assertIsString($trim);
         $this->assertEquals('Sport', $trim);
-        $this->assertNull($kilometerGroup);
         $this->assertIsInt($salePrice);
         $this->assertEquals(2000, $salePrice);
         $this->assertIsInt($purchasePrice);

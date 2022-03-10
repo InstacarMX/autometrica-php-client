@@ -20,36 +20,48 @@
 
 namespace Instacar\AutometricaWebserviceClient\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
-class VehiclePrice
+/**
+ * @internal
+ */
+class AutometricaPrice
 {
     private string $brand;
 
+    /**
+     * @SerializedName("subbrand")
+     */
     private string $model;
 
     private int $year;
 
+    /**
+     * @SerializedName("version")
+     */
     private string $trim;
 
-    private int $salePrice;
-
-    private int $purchasePrice;
-
-    private ?MileagePrice $mileagePrice = null;
+    /**
+     * @SerializedName("km_group")
+     */
+    private ?string $kilometerGroup;
 
     /**
-     * @phpstan-var Collection<int, AddOnPrice>
-     * @var Collection
+     * @SerializedName("sale")
      */
-    private Collection $addOnPrices;
+    private int $salePrice;
+
+    /**
+     * @SerializedName("purchase")
+     */
+    private int $purchasePrice;
 
     /**
      * @param string $brand
      * @param string $model
      * @param int $year
      * @param string $trim
+     * @param string|int $kilometerGroup
      * @param int $salePrice
      * @param int $purchasePrice
      */
@@ -58,6 +70,7 @@ class VehiclePrice
         string $model,
         int $year,
         string $trim,
+        $kilometerGroup,
         int $salePrice,
         int $purchasePrice
     ) {
@@ -65,9 +78,9 @@ class VehiclePrice
         $this->model = $model;
         $this->year = $year;
         $this->trim = $trim;
+        $this->kilometerGroup = is_string($kilometerGroup) ? $kilometerGroup : null;
         $this->salePrice = $salePrice;
         $this->purchasePrice = $purchasePrice;
-        $this->addOnPrices = new ArrayCollection();
     }
 
     public function getBrand(): string
@@ -90,6 +103,11 @@ class VehiclePrice
         return $this->trim;
     }
 
+    public function getKilometerGroup(): ?string
+    {
+        return $this->kilometerGroup;
+    }
+
     public function getSalePrice(): int
     {
         return $this->salePrice;
@@ -98,33 +116,5 @@ class VehiclePrice
     public function getPurchasePrice(): int
     {
         return $this->purchasePrice;
-    }
-
-    public function getMileagePrice(): ?MileagePrice
-    {
-        return $this->mileagePrice;
-    }
-
-    public function setMileagePrice(MileagePrice $mileagePrice): self
-    {
-        $this->mileagePrice = $mileagePrice;
-
-        return $this;
-    }
-
-    /**
-     * @phpstan-return iterable<AddOnPrice>
-     * @return iterable
-     */
-    public function getAddOnPrices(): iterable
-    {
-        return $this->addOnPrices;
-    }
-
-    public function addAddOnPrice(AddOnPrice $addOnPrice): self
-    {
-        $this->addOnPrices->add($addOnPrice);
-
-        return $this;
     }
 }
