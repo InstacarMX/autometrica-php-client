@@ -238,7 +238,7 @@ class AutometricaClient
 
     /**
      * @param RequestInterface $request
-     * @phpstan-param array<string, mixed> $headers
+     * @phpstan-param array<string, string|array<string>> $headers
      * @param array $headers
      * @return RequestInterface
      */
@@ -248,12 +248,12 @@ class AutometricaClient
         // charset to ISO-8859-1.
         foreach ($headers as $header => $value) {
             if (is_array($value)) {
-                foreach ($value as $item) {
-                    $request = $request->withAddedHeader($header, utf8_decode($item));
-                }
+                $value = array_map('utf8_decode', $value);
             } else {
-                $request = $request->withHeader($header, utf8_decode($value));
+                $value = utf8_decode($value);
             }
+
+            $request = $request->withHeader($header, $value);
         }
 
         // Set default headers
