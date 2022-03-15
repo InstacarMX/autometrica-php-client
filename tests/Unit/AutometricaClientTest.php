@@ -124,6 +124,15 @@ class AutometricaClientTest extends TestCase
                             "km_group": 0,
                             "sale": 2000,
                             "purchase": 0
+                        },
+                        {
+                            "brand": "Volkswagen",
+                            "subbrand": "Beetle",
+                            "year": 2018,
+                            "version": "Agregar TA",
+                            "km_group": 0,
+                            "sale": 150,
+                            "purchase": ""
                         }
                     ]
                 }'
@@ -184,7 +193,7 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals('Sport', $trim);
     }
 
-    public function testPrice(): void
+    public function testVehiclePrice(): void
     {
         $vehiclePrice = self::$autometricaClient->getPrice('Audi', 'A1', 2020, 'Deluxe Edition');
         $mileagePrice = $vehiclePrice->getMileagePrice();
@@ -197,8 +206,8 @@ class AutometricaClientTest extends TestCase
         $model = $vehiclePrice->getModel();
         $year = $vehiclePrice->getYear();
         $trim = $vehiclePrice->getTrim();
-        $salePrice = $vehiclePrice->getSalePrice();
-        $purchasePrice = $vehiclePrice->getPurchasePrice();
+        $vehicleSalePrice = $vehiclePrice->getSalePrice();
+        $vehiclePurchasePrice = $vehiclePrice->getPurchasePrice();
         $this->assertIsString($brand);
         $this->assertEquals('Audi', $brand);
         $this->assertIsString($model);
@@ -207,61 +216,58 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals(2020, $year);
         $this->assertIsString($trim);
         $this->assertEquals('Deluxe Edition', $trim);
-        $this->assertIsInt($salePrice);
-        $this->assertEquals(1000, $salePrice);
-        $this->assertIsInt($purchasePrice);
-        $this->assertEquals(1250, $purchasePrice);
+        $this->assertIsInt($vehicleSalePrice);
+        $this->assertEquals(1000, $vehicleSalePrice);
+        $this->assertIsInt($vehiclePurchasePrice);
+        $this->assertEquals(1250, $vehiclePurchasePrice);
 
-        $kilometerGroup = $mileagePrice->getKilometerGroup();
-        $salePrice = $mileagePrice->getSalePrice();
-        $purchasePrice = $mileagePrice->getPurchasePrice();
-        $this->assertIsString($kilometerGroup);
-        $this->assertEquals('A', $kilometerGroup);
-        $this->assertIsInt($salePrice);
-        $this->assertEquals(0, $salePrice);
-        $this->assertIsInt($purchasePrice);
-        $this->assertEquals(0, $purchasePrice);
+        $mileageGroup = $mileagePrice->getGroup();
+        $mileageValue = $mileagePrice->getValue();
+        $this->assertIsString($mileageGroup);
+        $this->assertEquals('A', $mileageGroup);
+        $this->assertIsInt($mileageValue);
+        $this->assertEquals(0, $mileageValue);
 
         /** @var AddOnPrice $addOnPrice */
         $addOnPrice = $addOnPrices[0];
-        $name = $addOnPrice->getName();
-        $salePrice = $addOnPrice->getSalePrice();
-        $purchasePrice = $addOnPrice->getPurchasePrice();
-        $this->assertIsString($name);
-        $this->assertEquals('Agregar A/C', $name);
-        $this->assertIsInt($salePrice);
-        $this->assertEquals(200, $salePrice);
-        $this->assertIsInt($purchasePrice);
-        $this->assertEquals(300, $purchasePrice);
+        $addOnName = $addOnPrice->getName();
+        $addOnSalePrice = $addOnPrice->getSalePrice();
+        $addOnPurchasePrice = $addOnPrice->getPurchasePrice();
+        $this->assertIsString($addOnName);
+        $this->assertEquals('Agregar A/C', $addOnName);
+        $this->assertIsInt($addOnSalePrice);
+        $this->assertEquals(200, $addOnSalePrice);
+        $this->assertIsInt($addOnPurchasePrice);
+        $this->assertEquals(300, $addOnPurchasePrice);
 
         /** @var AddOnPrice $addOnPrice */
         $addOnPrice = $addOnPrices[1];
-        $name = $addOnPrice->getName();
-        $salePrice = $addOnPrice->getSalePrice();
-        $purchasePrice = $addOnPrice->getPurchasePrice();
-        $this->assertIsString($name);
-        $this->assertEquals('Agregar TA', $name);
-        $this->assertIsInt($salePrice);
-        $this->assertEquals(100, $salePrice);
-        $this->assertIsInt($purchasePrice);
-        $this->assertEquals(200, $purchasePrice);
+        $addOnName = $addOnPrice->getName();
+        $addOnSalePrice = $addOnPrice->getSalePrice();
+        $addOnPurchasePrice = $addOnPrice->getPurchasePrice();
+        $this->assertIsString($addOnName);
+        $this->assertEquals('Agregar TA', $addOnName);
+        $this->assertIsInt($addOnSalePrice);
+        $this->assertEquals(100, $addOnSalePrice);
+        $this->assertIsInt($addOnPurchasePrice);
+        $this->assertEquals(200, $addOnPurchasePrice);
     }
 
-    public function testPriceWithoutMileage(): void
+    public function testRecentVehiclePrice(): void
     {
-        $vehiclePrice = self::$autometricaClient->getPrice('Audi', 'A1', 2020, 'Deluxe Edition');
+        $vehiclePrice = self::$autometricaClient->getPrice('Volkswagen', 'Beetle', 2018, 'Sport');
         $mileagePrice = $vehiclePrice->getMileagePrice();
         $addOnPrices = [ ...$vehiclePrice->getAddOnPrices() ];
 
         $this->assertNull($mileagePrice);
-        $this->assertCount(0, $addOnPrices);
+        $this->assertCount(1, $addOnPrices);
 
         $brand = $vehiclePrice->getBrand();
         $model = $vehiclePrice->getModel();
         $year = $vehiclePrice->getYear();
         $trim = $vehiclePrice->getTrim();
-        $salePrice = $vehiclePrice->getSalePrice();
-        $purchasePrice = $vehiclePrice->getPurchasePrice();
+        $vehicleSalePrice = $vehiclePrice->getSalePrice();
+        $vehiclePurchasePrice = $vehiclePrice->getPurchasePrice();
         $this->assertIsString($brand);
         $this->assertEquals('Volkswagen', $brand);
         $this->assertIsString($model);
@@ -270,10 +276,20 @@ class AutometricaClientTest extends TestCase
         $this->assertEquals(2018, $year);
         $this->assertIsString($trim);
         $this->assertEquals('Sport', $trim);
-        $this->assertIsInt($salePrice);
-        $this->assertEquals(2000, $salePrice);
-        $this->assertIsInt($purchasePrice);
-        $this->assertEquals(0, $purchasePrice);
+        $this->assertIsInt($vehicleSalePrice);
+        $this->assertEquals(2000, $vehicleSalePrice);
+        $this->assertNull($vehiclePurchasePrice);
+
+        /** @var AddOnPrice $addOnPrice */
+        $addOnPrice = $addOnPrices[0];
+        $addOnName = $addOnPrice->getName();
+        $addOnSalePrice = $addOnPrice->getSalePrice();
+        $addOnPurchasePrice = $addOnPrice->getPurchasePrice();
+        $this->assertIsString($addOnName);
+        $this->assertEquals('Agregar TA', $addOnName);
+        $this->assertIsInt($addOnSalePrice);
+        $this->assertEquals(150, $addOnSalePrice);
+        $this->assertNull($addOnPurchasePrice);
     }
 
     public function testBadRequestException(): void

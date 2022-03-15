@@ -22,31 +22,23 @@ namespace Instacar\AutometricaWebserviceClient\Model;
 
 class MileagePrice
 {
-    private string $kilometerGroup;
+    private string $group;
 
-    private int $salePrice;
+    private int $value;
 
-    private int $purchasePrice;
-
-    public function __construct(string $kilometerGroup, int $salePrice, int $purchasePrice)
+    public function __construct(string $group, int $value)
     {
-        $this->kilometerGroup = $kilometerGroup;
-        $this->salePrice = $salePrice;
-        $this->purchasePrice = $purchasePrice;
+        $this->group = $group;
+        $this->value = $value;
     }
 
-    public function getKilometerGroup(): string
+    public function getGroup(): string
     {
-        return $this->kilometerGroup;
+        return $this->group;
     }
 
-    public function getSalePrice(): int
+    public function getValue(): int
     {
-        return $this->salePrice;
-    }
-
-    public function getPurchasePrice(): int
-    {
-        return $this->purchasePrice;
+        return $this->value;
     }
 }

@@ -57,6 +57,7 @@ class VehiclePricesResponse implements CollectionResponseInterface, ItemResponse
     public function getItem(): VehiclePrice
     {
         if ($this->item === null) {
+            /** @var AutometricaPrice $vehiclePrice */
             $vehiclePrice = $this->data->first();
             $this->item = new VehiclePrice(
                 $vehiclePrice->getBrand(),
@@ -68,6 +69,7 @@ class VehiclePricesResponse implements CollectionResponseInterface, ItemResponse
             );
 
             while ($this->data->next()) {
+                /** @var AutometricaPrice $price */
                 $price = $this->data->current();
 
                 if ($price->getTrim() !== 'Valor kilometraje') {
@@ -78,9 +80,8 @@ class VehiclePricesResponse implements CollectionResponseInterface, ItemResponse
                     ));
                 } else {
                     $this->item->setMileagePrice(new MileagePrice(
-                        $price->getKilometerGroup(),
-                        $price->getSalePrice(),
-                        $price->getPurchasePrice(),
+                        $price->getMileageGroup(),
+                        $price->getSalePrice() ?? $price->getPurchasePrice() ?? 0,
                     ));
                 }
             }

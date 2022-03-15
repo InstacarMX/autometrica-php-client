@@ -26,9 +26,9 @@ class AddOnPrice
 
     private int $salePrice;
 
-    private int $purchasePrice;
+    private ?int $purchasePrice;
 
-    public function __construct(string $name, int $salePrice, int $purchasePrice)
+    public function __construct(string $name, int $salePrice, ?int $purchasePrice)
     {
         $this->name = $name;
         $this->salePrice = $salePrice;
@@ -45,7 +45,7 @@ class AddOnPrice
         return $this->salePrice;
     }
 
-    public function getPurchasePrice(): int
+    public function getPurchasePrice(): ?int
     {
         return $this->purchasePrice;
     }

@@ -44,43 +44,45 @@ class AutometricaPrice
     /**
      * @SerializedName("km_group")
      */
-    private ?string $kilometerGroup;
+    private ?string $mileageGroup;
 
     /**
      * @SerializedName("sale")
      */
-    private int $salePrice;
+    private ?int $salePrice;
 
     /**
      * @SerializedName("purchase")
      */
-    private int $purchasePrice;
+    private ?int $purchasePrice;
 
     /**
      * @param string $brand
      * @param string $model
      * @param int $year
      * @param string $trim
-     * @param string|int $kilometerGroup
-     * @param int $salePrice
-     * @param int $purchasePrice
+     * @param string|int $mileageGroup
+     * @param string|int $salePrice
+     * @param string|int $purchasePrice
      */
     public function __construct(
         string $brand,
         string $model,
         int $year,
         string $trim,
-        $kilometerGroup,
-        int $salePrice,
-        int $purchasePrice
+        $mileageGroup,
+        $salePrice,
+        $purchasePrice
     ) {
         $this->brand = $brand;
         $this->model = $model;
         $this->year = $year;
         $this->trim = $trim;
-        $this->kilometerGroup = is_string($kilometerGroup) ? $kilometerGroup : null;
-        $this->salePrice = $salePrice;
-        $this->purchasePrice = $purchasePrice;
+        // When the mileage group is unknown, Autométrica return int(0)
+        $this->mileageGroup = is_string($mileageGroup) ? $mileageGroup : null;
+        // When a addOn price is unknown, Autométrica return string("")
+        $this->salePrice = is_numeric($salePrice) && $salePrice !== 0 ? $salePrice : null;
+        $this->purchasePrice = is_numeric($purchasePrice) && $purchasePrice !== 0 ? $purchasePrice : null;
     }
 
     public function getBrand(): string
@@ -103,17 +105,17 @@ class AutometricaPrice
         return $this->trim;
     }
 
-    public function getKilometerGroup(): ?string
+    public function getMileageGroup(): ?string
     {
-        return $this->kilometerGroup;
+        return $this->mileageGroup;
     }
 
-    public function getSalePrice(): int
+    public function getSalePrice(): ?int
     {
         return $this->salePrice;
     }
 
-    public function getPurchasePrice(): int
+    public function getPurchasePrice(): ?int
     {
         return $this->purchasePrice;
     }

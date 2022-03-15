@@ -33,9 +33,9 @@ class VehiclePrice
 
     private string $trim;
 
-    private int $salePrice;
+    private ?int $salePrice;
 
-    private int $purchasePrice;
+    private ?int $purchasePrice;
 
     private ?MileagePrice $mileagePrice = null;
 
@@ -50,16 +50,16 @@ class VehiclePrice
      * @param string $model
      * @param int $year
      * @param string $trim
-     * @param int $salePrice
-     * @param int $purchasePrice
+     * @param int|null $salePrice
+     * @param int|null $purchasePrice
      */
     public function __construct(
         string $brand,
         string $model,
         int $year,
         string $trim,
-        int $salePrice,
-        int $purchasePrice
+        ?int $salePrice,
+        ?int $purchasePrice
     ) {
         $this->brand = $brand;
         $this->model = $model;
@@ -90,12 +90,12 @@ class VehiclePrice
         return $this->trim;
     }
 
-    public function getSalePrice(): int
+    public function getSalePrice(): ?int
     {
         return $this->salePrice;
     }
 
-    public function getPurchasePrice(): int
+    public function getPurchasePrice(): ?int
     {
         return $this->purchasePrice;
     }
